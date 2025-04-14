@@ -1,0 +1,38 @@
+
+        body {
+            display: flex;
+            justify-content: center;
+        }
+        
+        table {
+            border-collapse: collapse;
+            margin-top: 50px;
+        }
+        
+        td {
+            border: 1px solid black;
+            text-align: left;
+    
+        }
+        
+
+        .yellow-cell {
+            background-color: #CCCC00;
+            width: 50px;
+            height: 50px;
+        }
+        
+
+        .x-header {
+            height: 30px;
+        }
+        
+
+        .y-header {
+            width: 30px;
+        }
+        
+        .empty-corner {
+            border: 1px solid black;
+        }
+   

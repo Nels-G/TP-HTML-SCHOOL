@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulaire d'inscription en ligne</title>
+    <link rel="stylesheet" href="css/style-from.css">
+
+</head>
+<body>
+    <h1>FORMULAIRE D'INSCRIPTION EN LIGNE</h1>
+    
+    <form>
+        <fieldset>
+            <legend>Informations personnelles</legend>
+            
+            <table>
+                <tr>
+                    <td><label for="nom">Nom :</label></td>
+                    <td><input type="text" id="nom" name="nom"></td>
+                    <td><label for="prenom">Prénoms :</label></td>
+                    <td><input type="text" id="prenom" name="prenom"></td>
+                </tr>
+                
+                <tr>
+                    <td><label for="date-naissance">Date de naissance :</label></td>
+                    <td><input type="date" id="date-naissance" name="date-naissance" placeholder="jj/mm/aaaa"></td>
+                    <td><label for="lieu-naissance">Lieu de naissance :</label></td>
+                    <td><input type="text" id="lieu-naissance" name="lieu-naissance"></td>
+                </tr>
+                
+                <tr>
+                    <td><label>Sexe :</label></td>
+                    <td>
+                        <input type="radio" id="sexe-m" name="sexe" value="M">
+                        <label for="sexe-m">M</label>
+                        <input type="radio" id="sexe-f" name="sexe" value="F">
+                        <label for="sexe-f">F</label>
+                    </td>
+                    <td><label>Situation matrimoniale :</label></td>
+                    <td>
+                        <input type="radio" id="marie" name="situation" value="Marié(e)">
+                        <label for="marie">Marié(e)</label>
+                        <input type="radio" id="divorce" name="situation" value="Divorcé(e)">
+                        <label for="divorce">Divorcé(e)</label>
+                        <input type="radio" id="veuf" name="situation" value="Veuf/Veuve">
+                        <label for="veuf">Veuf/Veuve</label>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td><label for="nationalite">Nationalité :</label></td>
+                    <td>
+                        <select id="nationalite" name="nationalite">
+                            <option value="">Choisir votre nationalité</option>
+                            <option value="fr">Française</option>
+                            <option value="be">Belge</option>
+                            <option value="ch">Suisse</option>
+                            <option value="ca">Canadienne</option>
+                            <option value="autre">Autre</option>
+                        </select>
+                    </td>
+                    <td><label for="pays">Pays de résidence :</label></td>
+                    <td>
+                        <select id="pays" name="pays">
+                            <option value="">Choisir votre pays</option>
+                            <option value="fr">France</option>
+                            <option value="be">Belgique</option>
+                            <option value="ch">Suisse</option>
+                            <option value="ca">Canada</option>
+                            <option value="autre">Autre</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+        
+        <button type="submit">Soumettre</button>
+    </form>
+</body>
+</html>

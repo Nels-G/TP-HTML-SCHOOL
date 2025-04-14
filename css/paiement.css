@@ -1,0 +1,22 @@
+body{
+    background-color: #f8f9fa;
+}
+
+.container {
+    max-width: 800px;
+}
+
+h2, h3{
+    text-align: center;
+}
+
+form{
+    background: white;
+}
+table {
+    background: white;
+}
+
+p{
+    font-size: 14px;
+}

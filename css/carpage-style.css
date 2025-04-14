@@ -1,0 +1,175 @@
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: #b98989;
+            color: #333;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #333;
+        }
+        
+        .car-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .car-item {
+            background-color: white;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .car-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .search-section {
+            margin-top: 30px;
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 20px;
+        }
+        
+        .info-block {
+            background-color: #8ebb8e;
+            padding: 15px;
+            color: #333;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
+        .search-form {
+            text-align: center;
+        }
+        
+        .search-form h2 {
+            font-size: 20px;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        
+        .search-input {
+            margin-bottom: 20px;
+        }
+        
+        .search-input input {
+            padding: 6px;
+            width: 250px;
+            border: 1px solid #ccc;
+        }
+        
+        .search-input button {
+            padding: 6px 15px;
+            background-color: #4a4a4a;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+        }
+        
+        th {
+            background-color: #f0d078;
+            padding: 8px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        
+        td {
+            padding: 8px;
+            border: 1px solid #ddd;
+        }
+        
+        caption {
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+
+
+
+        .navbar {
+            background-color: #3691d2; 
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .navbar .logo {
+            font-size: 22px;
+            font-weight: bold;
+        }
+        
+        .navbar ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            margin-left: auto; /* ✅ Pour pousser les éléments du menu à gauche */
+        }
+        
+        .navbar ul li {
+            margin: 0 15px;
+        }
+        
+        .navbar ul li a {
+            text-decoration: none;
+            color: white;
+            font-size: 16px;
+            transition: color 0.3s ease;
+        }
+        
+        .navbar ul li a:hover {
+            color: #f0d078; 
+        }
+        
+        @media screen and (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                text-align: left;
+            }
+        
+            .navbar ul {
+                flex-direction: column;
+                margin-left: 0; /* ✅ Ajustement pour mobile */
+            }
+        
+            .navbar ul li {
+                margin: 10px 0;
+            }
+        }
+        
