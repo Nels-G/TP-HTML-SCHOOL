@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe Deluxe</title>
+    <style>
+        :root {
+            --primary-color: #6a11cb;
+            --secondary-color: #2575fc;
+            --bg-color: #f8f9fa;
+            --text-color: #343a40;
+            --cell-size: 100px;
+            --border-radius: 15px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            width: 100%;
+            max-width: 800px;
+            transition: var(--transition);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .player-info {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .player {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .player.active {
+            background: linear-gradient(135deg, rgba(106, 17, 203, 0.2), rgba(37, 117, 252, 0.2));
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .player-symbol {
+            font-size: 1.5rem;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background-color: white;
+        }
+
+        .timer {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #dc3545;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 5px 10px;
+            border-radius: var(--border-radius);
+        }
+
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px auto;
+            width: fit-content;
+        }
+
+        .cell {
+            width: var(--cell-size);
+            height: var(--cell-size);
+            background-color: white;
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .cell:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .cell.x {
+            color: #dc3545;
+        }
+
+        .cell.o {
+            color: #28a745;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--border-radius);
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .stats-container {
+            display: flex;
+            gap: 20px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .stats-box {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 15px;
+            flex: 1;
+            min-width: 200px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .stats-box h3 {
+            margin-bottom: 10px;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 5px;
+        }
+
+        .scoreboard {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 10px;
+        }
+
+        .score-item {
+            text-align: center;
+        }
+
+        .score-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            animation: modalAppear 0.4s ease-out;
+        }
+
+        @keyframes modalAppear {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal h2 {
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        .modal p {
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            border-radius: 50%;
+            animation: confettiFall 5s linear forwards;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .settings-panel {
+            background-color: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .settings-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .settings-row label {
+            margin-right: 10px;
+            min-width: 100px;
+        }
+
+        .settings-row input, .settings-row select {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .history {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .history-item {
+            padding: 5px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+
+        .history-item:hover {
+            background-color: #e9ecef;
+        }
+
+        @media (max-width: 600px) {
+            :root {
+                --cell-size: 80px;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .player-info {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .stats-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌟 Tic Tac Toe Deluxe 🌟</h1>
+        
+        <div class="game-header">
+            <div class="player-info">
+                <div class="player active" id="player1">
+                    <div class="player-symbol">❌</div>
+                    <span>Joueur 1</span>
+                    <span class="score-value" id="score1">0</span>
+                </div>
+                <div class="player" id="player2">
+                    <div class="player-symbol">⭕</div>
+                    <span>Joueur 2</span>
+                    <span class="score-value" id="score2">0</span>
+                </div>
+            </div>
+            <div class="timer" id="timer">10s</div>
+        </div>
+        
+        <div class="game-board" id="board">
+            <div class="cell" data-index="0"></div>
+            <div class="cell" data-index="1"></div>
+            <div class="cell" data-index="2"></div>
+            <div class="cell" data-index="3"></div>
+            <div class="cell" data-index="4"></div>
+            <div class="cell" data-index="5"></div>
+            <div class="cell" data-index="6"></div>
+            <div class="cell" data-index="7"></div>
+            <div class="cell" data-index="8"></div>
+        </div>
+        
+        <div class="controls">
+            <button id="newGameBtn">Nouvelle Partie</button>
+            <button id="resetScoreBtn">Réinitialiser Scores</button>
+            <button id="settingsBtn">Paramètres</button>
+            <button id="historyBtn">Historique</button>
+        </div>
+        
+        <div class="stats-container">
+            <div class="stats-box">
+                <h3>Statistiques</h3>
+                <div class="scoreboard">
+                    <div class="score-item">
+                        <div>Parties</div>
+                        <div class="score-value" id="totalGames">0</div>
+                    </div>
+                    <div class="score-item">
+                        <div>Égalités</div>
+                        <div class="score-value" id="totalDraws">0</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stats-box">
+                <h3>Meilleurs Coups</h3>
+                <div id="hotSpots">Aucune donnée encore</div>
+            </div>
+        </div>
+        
+        <div class="settings-panel" id="settingsPanel" style="display: none;">
+            <h3>Paramètres du Jeu</h3>
+            <div class="settings-row">
+                <label for="player1Name">Joueur 1:</label>
+                <input type="text" id="player1Name" value="Joueur 1">
+                <select id="player1Symbol">
+                    <option value="❌">❌</option>
+                    <option value="⚡">⚡</option>
+                    <option value="🔥">🔥</option>
+                    <option value="⭐">⭐</option>
+                </select>
+            </div>
+            <div class="settings-row">
+                <label for="player2Name">Joueur 2:</label>
+                <input type="text" id="player2Name" value="Joueur 2">
+                <select id="player2Symbol">
+                    <option value="⭕">⭕</option>
+                    <option value="💧">💧</option>
+                    <option value="🌙">🌙</option>
+                    <option value="❤️">❤️</option>
+                </select>
+            </div>
+            <div class="settings-row">
+                <label for="timerDuration">Temps par tour (s):</label>
+                <input type="number" id="timerDuration" min="5" max="30" value="10">
+            </div>
+            <div class="settings-row">
+                <label for="enableSounds">Sons:</label>
+                <input type="checkbox" id="enableSounds" checked>
+            </div>
+            <button id="saveSettingsBtn">Enregistrer</button>
+        </div>
+    </div>
+    
+    <div class="modal" id="resultModal">
+        <div class="modal-content">
+            <h2 id="resultTitle">Résultat</h2>
+            <p id="resultMessage"></p>
+            <button id="modalCloseBtn">Fermer</button>
+        </div>
+    </div>
+    
+    <div class="modal" id="historyModal">
+        <div class="modal-content">
+            <h2>Historique des Parties</h2>
+            <div class="history" id="gameHistory">
+                <!-- Les parties historiques seront ajoutées ici -->
+            </div>
+            <button id="historyCloseBtn">Fermer</button>
+        </div>
+    </div>
+    
+    <audio id="clickSound" src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.mp3" preload="auto"></audio>
+    <audio id="winSound" src="https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3" preload="auto"></audio>
+    <audio id="drawSound" src="https://assets.mixkit.co/sfx/preview/mixkit-retro-arcade-casino-notification-211.mp3" preload="auto"></audio>
+    <audio id="timerSound" src="https://assets.mixkit.co/sfx/preview/mixkit-unlock-game-notification-253.mp3" preload="auto"></audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Éléments du DOM
+            const board = document.getElementById('board');
+            const cells = document.querySelectorAll('.cell');
+            const player1Element = document.getElementById('player1');
+            const player2Element = document.getElementById('player2');
+            const score1Element = document.getElementById('score1');
+            const score2Element = document.getElementById('score2');
+            const totalGamesElement = document.getElementById('totalGames');
+            const totalDrawsElement = document.getElementById('totalDraws');
+            const hotSpotsElement = document.getElementById('hotSpots');
+            const timerElement = document.getElementById('timer');
+            const newGameBtn = document.getElementById('newGameBtn');
+            const resetScoreBtn = document.getElementById('resetScoreBtn');
+            const settingsBtn = document.getElementById('settingsBtn');
+            const historyBtn = document.getElementById('historyBtn');
+            const resultModal = document.getElementById('resultModal');
+            const resultTitle = document.getElementById('resultTitle');
+            const resultMessage = document.getElementById('resultMessage');
+            const modalCloseBtn = document.getElementById('modalCloseBtn');
+            const historyModal = document.getElementById('historyModal');
+            const gameHistoryElement = document.getElementById('gameHistory');
+            const historyCloseBtn = document.getElementById('historyCloseBtn');
+            const settingsPanel = document.getElementById('settingsPanel');
+            const player1NameInput = document.getElementById('player1Name');
+            const player2NameInput = document.getElementById('player2Name');
+            const player1SymbolSelect = document.getElementById('player1Symbol');
+            const player2SymbolSelect = document.getElementById('player2Symbol');
+            const timerDurationInput = document.getElementById('timerDuration');
+            const enableSoundsInput = document.getElementById('enableSounds');
+            const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+            
+            // Sons
+            const clickSound = document.getElementById('clickSound');
+            const winSound = document.getElementById('winSound');
+            const drawSound = document.getElementById('drawSound');
+            const timerSound = document.getElementById('timerSound');
+            
+            // Variables du jeu
+            let boardState = ['', '', '', '', '', '', '', '', ''];
+            let currentPlayer = 'X';
+            let gameActive = true;
+            let scores = { player1: 0, player2: 0, draws: 0, total: 0 };
+            let moveHistory = [];
+            let allGamesHistory = [];
+            let timer;
+            let timeLeft = 10;
+            let timerInterval;
+            let hotSpots = Array(9).fill(0);
+            let soundsEnabled = true;
+            
+            // Paramètres
+            let settings = {
+                player1Name: 'Joueur 1',
+                player2Name: 'Joueur 2',
+                player1Symbol: '❌',
+                player2Symbol: '⭕',
+                timerDuration: 10,
+                sounds: true
+            };
+            
+            // Charger les paramètres depuis le localStorage
+            function loadSettings() {
+                const savedSettings = localStorage.getItem('ticTacToeSettings');
+                if (savedSettings) {
+                    settings = JSON.parse(savedSettings);
+                    applySettings();
+                }
+            }
+            
+            // Appliquer les paramètres
+            function applySettings() {
+                player1NameInput.value = settings.player1Name;
+                player2NameInput.value = settings.player2Name;
+                player1SymbolSelect.value = settings.player1Symbol;
+                player2SymbolSelect.value = settings.player2Symbol;
+                timerDurationInput.value = settings.timerDuration;
+                enableSoundsInput.checked = settings.sounds;
+                soundsEnabled = settings.sounds;
+                
+                updatePlayerNames();
+            }
+            
+            // Sauvegarder les paramètres
+            function saveSettings() {
+                settings.player1Name = player1NameInput.value;
+                settings.player2Name = player2NameInput.value;
+                settings.player1Symbol = player1SymbolSelect.value;
+                settings.player2Symbol = player2SymbolSelect.value;
+                settings.timerDuration = parseInt(timerDurationInput.value);
+                settings.sounds = enableSoundsInput.checked;
+                soundsEnabled = settings.sounds;
+                
+                localStorage.setItem('ticTacToeSettings', JSON.stringify(settings));
+                applySettings();
+                settingsPanel.style.display = 'none';
+            }
+            
+            // Mettre à jour les noms des joueurs
+            function updatePlayerNames() {
+                document.querySelector('#player1 span').textContent = settings.player1Name;
+                document.querySelector('#player2 span').textContent = settings.player2Name;
+                document.querySelector('#player1 .player-symbol').textContent = settings.player1Symbol;
+                document.querySelector('#player2 .player-symbol').textContent = settings.player2Symbol;
+            }
+            
+            // Initialisation du jeu
+            function initGame() {
+                loadSettings();
+                loadScores();
+                updateScoreDisplay();
+                startNewGame();
+                
+                // Événements
+                cells.forEach(cell => cell.addEventListener('click', handleCellClick));
+                newGameBtn.addEventListener('click', startNewGame);
+                resetScoreBtn.addEventListener('click', resetScores);
+                settingsBtn.addEventListener('click', () => {
+                    settingsPanel.style.display = settingsPanel.style.display === 'none' ? 'block' : 'none';
+                });
+                historyBtn.addEventListener('click', showHistory);
+                modalCloseBtn.addEventListener('click', () => resultModal.style.display = 'none');
+                historyCloseBtn.addEventListener('click', () => historyModal.style.display = 'none');
+                saveSettingsBtn.addEventListener('click', saveSettings);
+            }
+            
+            // Gestion du clic sur une cellule
+            function handleCellClick(e) {
+                const index = parseInt(e.target.getAttribute('data-index'));
+                
+                if (boardState[index] !== '' || !gameActive) return;
+                
+                makeMove(index, currentPlayer);
+            }
+            
+            // Faire un mouvement
+            function makeMove(index, player) {
+                boardState[index] = player;
+                const symbol = player === 'X' ? settings.player1Symbol : settings.player2Symbol;
+                cells[index].textContent = symbol;
+                cells[index].classList.add(player === 'X' ? 'x' : 'o');
+                
+                // Enregistrer le mouvement dans l'historique
+                moveHistory.push({ index, player });
+                
+                // Mettre à jour les hotspots
+                hotSpots[index]++;
+                updateHotSpots();
+                
+                // Jouer le son
+                if (soundsEnabled) {
+                    clickSound.currentTime = 0;
+                    clickSound.play();
+                }
+                
+                // Vérifier si quelqu'un a gagné
+                if (checkWin()) {
+                    endGame(currentPlayer);
+                    return;
+                }
+                
+                // Vérifier s'il y a égalité
+                if (checkDraw()) {
+                    endGame(null);
+                    return;
+                }
+                
+                // Changer de joueur
+                switchPlayer();
+                resetTimer();
+            }
+            
+            // Vérifier s'il y a une victoire
+            function checkWin() {
+                const winPatterns = [
+                    [0, 1, 2], [3, 4, 5], [6, 7, 8], // lignes
+                    [0, 3, 6], [1, 4, 7], [2, 5, 8], // colonnes
+                    [0, 4, 8], [2, 4, 6]             // diagonales
+                ];
+                
+                return winPatterns.some(pattern => {
+                    return pattern.every(index => {
+                        return boardState[index] === currentPlayer;
+                    });
+                });
+            }
+            
+            // Vérifier s'il y a égalité
+            function checkDraw() {
+                return boardState.every(cell => cell !== '');
+            }
+            
+            // Changer de joueur
+            function switchPlayer() {
+                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                player1Element.classList.toggle('active', currentPlayer === 'X');
+                player2Element.classList.toggle('active', currentPlayer === 'O');
+            }
+            
+            // Terminer le jeu
+            function endGame(winner) {
+                gameActive = false;
+                clearInterval(timerInterval);
+                
+                // Enregistrer la partie dans l'historique
+                const gameResult = {
+                    date: new Date().toLocaleString(),
+                    moves: [...moveHistory],
+                    winner,
+                    board: [...boardState]
+                };
+                allGamesHistory.unshift(gameResult);
+                localStorage.setItem('ticTacToeHistory', JSON.stringify(allGamesHistory));
+                
+                // Mettre à jour les scores
+                if (winner) {
+                    if (winner === 'X') {
+                        scores.player1++;
+                        showResult(`${settings.player1Name} gagne!`, settings.player1Symbol);
+                    } else {
+                        scores.player2++;
+                        showResult(`${settings.player2Name} gagne!`, settings.player2Symbol);
+                    }
+                    
+                    if (soundsEnabled) {
+                        winSound.currentTime = 0;
+                        winSound.play();
+                    }
+                    
+                    createConfetti();
+                } else {
+                    scores.draws++;
+                    showResult('Match nul!', '🤝');
+                    
+                    if (soundsEnabled) {
+                        drawSound.currentTime = 0;
+                        drawSound.play();
+                    }
+                }
+                
+                scores.total++;
+                saveScores();
+                updateScoreDisplay();
+            }
+            
+            // Afficher le résultat
+            function showResult(message, symbol) {
+                resultTitle.textContent = 'Résultat';
+                resultMessage.innerHTML = `<div style="font-size: 3rem; margin: 20px 0;">${symbol}</div><div>${message}</div>`;
+                resultModal.style.display = 'flex';
+            }
+            
+            // Créer des confettis
+            function createConfetti() {
+                const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+                
+                for (let i = 0; i < 100; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.left = `${Math.random() * 100}vw`;
+                    confetti.style.width = `${Math.random() * 10 + 5}px`;
+                    confetti.style.height = `${Math.random() * 10 + 5}px`;
+                    confetti.style.animationDuration = `${Math.random() * 3 + 2}s`;
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 5000);
+                }
+            }
+            
+            // Commencer une nouvelle partie
+            function startNewGame() {
+                boardState = ['', '', '', '', '', '', '', '', ''];
+                currentPlayer = 'X';
+                gameActive = true;
+                moveHistory = [];
+                
+                // Réinitialiser le tableau
+                cells.forEach(cell => {
+                    cell.textContent = '';
+                    cell.classList.remove('x', 'o');
+                });
+                
+                // Réinitialiser le timer
+                resetTimer();
+                
+                // Mettre à jour l'affichage des joueurs
+                player1Element.classList.add('active');
+                player2Element.classList.remove('active');
+                
+                // Cacher le modal si ouvert
+                resultModal.style.display = 'none';
+            }
+            
+            // Timer functions
+            function resetTimer() {
+                clearInterval(timerInterval);
+                timeLeft = settings.timerDuration;
+                updateTimerDisplay();
+                
+                timerInterval = setInterval(() => {
+                    timeLeft--;
+                    updateTimerDisplay();
+                    
+                    if (timeLeft <= 3 && soundsEnabled) {
+                        timerSound.currentTime = 0;
+                        timerSound.play();
+                    }
+                    
+                    if (timeLeft <= 0) {
+                        clearInterval(timerInterval);
+                        makeRandomMove();
+                    }
+                }, 1000);
+            }
+            
+            function updateTimerDisplay() {
+                timerElement.textContent = `${timeLeft}s`;
+                
+                // Changer la couleur en fonction du temps restant
+                if (timeLeft <= 3) {
+                    timerElement.style.color = '#dc3545';
+                    timerElement.style.transform = 'scale(1.1)';
+                } else if (timeLeft <= 7) {
+                    timerElement.style.color = '#ffc107';
+                    timerElement.style.transform = 'scale(1.05)';
+                } else {
+                    timerElement.style.color = '#28a745';
+                    timerElement.style.transform = 'scale(1)';
+                }
+            }
+            
+            // Faire un mouvement aléatoire
+            function makeRandomMove() {
+                if (!gameActive) return;
+                
+                const emptyCells = boardState
+                    .map((cell, index) => cell === '' ? index : null)
+                    .filter(val => val !== null);
+                
+                if (emptyCells.length > 0) {
+                    const randomIndex = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+                    makeMove(randomIndex, currentPlayer);
+                }
+            }
+            
+            // Gestion des scores
+            function loadScores() {
+                const savedScores = localStorage.getItem('ticTacToeScores');
+                if (savedScores) {
+                    scores = JSON.parse(savedScores);
+                }
+                
+                const savedHotSpots = localStorage.getItem('ticTacToeHotSpots');
+                if (savedHotSpots) {
+                    hotSpots = JSON.parse(savedHotSpots);
+                    updateHotSpots();
+                }
+                
+                const savedHistory = localStorage.getItem('ticTacToeHistory');
+                if (savedHistory) {
+                    allGamesHistory = JSON.parse(savedHistory);
+                }
+            }
+            
+            function saveScores() {
+                localStorage.setItem('ticTacToeScores', JSON.stringify(scores));
+                localStorage.setItem('ticTacToeHotSpots', JSON.stringify(hotSpots));
+            }
+            
+            function resetScores() {
+                scores = { player1: 0, player2: 0, draws: 0, total: 0 };
+                hotSpots = Array(9).fill(0);
+                saveScores();
+                updateScoreDisplay();
+                updateHotSpots();
+                startNewGame();
+            }
+            
+            function updateScoreDisplay() {
+                score1Element.textContent = scores.player1;
+                score2Element.textContent = scores.player2;
+                totalGamesElement.textContent = scores.total;
+                totalDrawsElement.textContent = scores.draws;
+            }
+            
+            // Mettre à jour l'affichage des hotspots
+            function updateHotSpots() {
+                if (hotSpots.every(spot => spot === 0)) {
+                    hotSpotsElement.textContent = 'Aucune donnée encore';
+                    return;
+                }
+                
+                const max = Math.max(...hotSpots);
+                const hotSpotsHTML = hotSpots.map((count, index) => {
+                    const percentage = max > 0 ? Math.round((count / max) * 100) : 0;
+                    return `
+                        <div style="margin-bottom: 5px;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>Case ${index + 1}:</span>
+                                <span>${count} coups</span>
+                            </div>
+                            <div style="background: #e9ecef; height: 10px; border-radius: 5px;">
+                                <div style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); width: ${percentage}%; height: 100%; border-radius: 5px;"></div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                hotSpotsElement.innerHTML = hotSpotsHTML;
+            }
+            
+            // Afficher l'historique
+            function showHistory() {
+                gameHistoryElement.innerHTML = '';
+                
+                if (allGamesHistory.length === 0) {
+                    gameHistoryElement.innerHTML = '<div style="text-align: center; padding: 20px;">Aucune partie enregistrée</div>';
+                } else {
+                    allGamesHistory.forEach((game, index) => {
+                        const historyItem = document.createElement('div');
+                        historyItem.className = 'history-item';
+                        
+                        let resultText;
+                        if (game.winner === 'X') {
+                            resultText = `${settings.player1Name} a gagné`;
+                        } else if (game.winner === 'O') {
+                            resultText = `${settings.player2Name} a gagné`;
+                        } else {
+                            resultText = 'Match nul';
+                        }
+                        
+                        historyItem.innerHTML = `
+                            <div><strong>Partie ${index + 1}</strong> - ${game.date}</div>
+                            <div>${resultText} - ${game.moves.length} coups</div>
+                        `;
+                        
+                        historyItem.addEventListener('click', () => replayGame(game));
+                        gameHistoryElement.appendChild(historyItem);
+                    });
+                }
+                
+                historyModal.style.display = 'flex';
+            }
+            
+            // Rejouer une partie
+            function replayGame(game) {
+                startNewGame();
+                gameActive = false;
+                
+                // Afficher le résultat
+                let resultMessage, symbol;
+                if (game.winner === 'X') {
+                    resultMessage = `${settings.player1Name} a gagné`;
+                    symbol = settings.player1Symbol;
+                } else if (game.winner === 'O') {
+                    resultMessage = `${settings.player2Name} a gagné`;
+                    symbol = settings.player2Symbol;
+                } else {
+                    resultMessage = 'Match nul';
+                    symbol = '🤝';
+                }
+                
+                resultTitle.textContent = `Replay - ${game.date}`;
+                resultMessage = `<div style="font-size: 3rem; margin: 20px 0;">${symbol}</div><div>${resultMessage}</div><div style="margin-top: 10px;">${game.moves.length} coups</div>`;
+                resultModal.style.display = 'flex';
+                
+                // Rejouer les coups un par un
+                let moveIndex = 0;
+                const replayInterval = setInterval(() => {
+                    if (moveIndex < game.moves.length) {
+                        const move = game.moves[moveIndex];
+                        const cell = cells[move.index];
+                        const symbol = move.player === 'X' ? settings.player1Symbol : settings.player2Symbol;
+                        
+                        cell.textContent = symbol;
+                        cell.classList.add(move.player === 'X' ? 'x' : 'o');
+                        moveIndex++;
+                    } else {
+                        clearInterval(replayInterval);
+                    }
+                }, 500);
+            }
+            
+            // Démarrer le jeu
+            initGame();
+        });
+    </script>
+</body>
+</html>
