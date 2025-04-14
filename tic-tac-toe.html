@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Tic Tac Toe Deluxe</title>
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --accent: #00cec9;
+            --light: #f5f6fa;
+            --dark: #2d3436;
+            --success: #00b894;
+            --danger: #d63031;
+            --warning: #fdcb6e;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--light);
+            padding: 20px;
+        }
+        
+        h1 {
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+        
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            max-width: 1000px;
+            width: 100%;
+        }
+        
+        .board-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(5px);
+        }
+        
+        .cell {
+            aspect-ratio: 1/1;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cell:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .cell.x {
+            color: var(--danger);
+        }
+        
+        .cell.o {
+            color: var(--success);
+        }
+        
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            background-color: var(--secondary);
+            color: var(--light);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        .reset-btn {
+            background-color: var(--warning);
+            color: var(--dark);
+        }
+        
+        .status {
+            font-size: 1.5rem;
+            text-align: center;
+            margin-bottom: 20px;
+            min-height: 40px;
+            padding: 5px 15px;
+            border-radius: 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+        }
+        
+        .player-turn {
+            display: inline-block;
+            padding: 0 10px;
+            border-radius: 5px;
+        }
+        
+        .player-x {
+            color: var(--danger);
+            font-weight: bold;
+        }
+        
+        .player-o {
+            color: var(--success);
+            font-weight: bold;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal.active .modal-content {
+            transform: scale(1);
+        }
+        
+        .modal h2 {
+            margin-bottom: 15px;
+            font-size: 2rem;
+        }
+        
+        .modal p {
+            margin-bottom: 25px;
+            font-size: 1.2rem;
+        }
+        
+        .modal-btn {
+            padding: 12px 25px;
+        }
+        
+        .win-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: var(--accent);
+            border-radius: 50%;
+            opacity: 0;
+        }
+        
+        .scoreboard {
+            display: flex;
+            gap: 30px;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(5px);
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .score-column {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .score-column.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .player-name {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+        
+        .score {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        
+        .draws {
+            border-left: 1px solid rgba(255, 255, 255, 0.2);
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Thème mode */
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .theme-toggle:hover {
+            transform: rotate(180deg);
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Chronomètre pour tours limités */
+        .timer {
+            position: absolute;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(5px);
+        }
+        
+        .timer.warning {
+            background-color: rgba(253, 203, 110, 0.3);
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.05); }
+            100% { transform: translateX(-50%) scale(1); }
+        }
+        
+        /* Classes pour modes spéciaux */
+        .special-mode {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .mode-btn {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .mode-btn.active {
+            background-color: var(--accent);
+            box-shadow: 0 0 15px var(--accent);
+        }
+        
+        /* Animation pour la cellule qui fait gagner */
+        @keyframes win-pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 rgba(0, 200, 0, 0.5); }
+            50% { transform: scale(1.05); box-shadow: 0 0 20px rgba(0, 200, 0, 0.8); }
+            100% { transform: scale(1); box-shadow: 0 0 0 rgba(0, 200, 0, 0.5); }
+        }
+        
+        .win-cell {
+            animation: win-pulse 1s infinite;
+            background-color: rgba(0, 200, 0, 0.2);
+        }
+        
+        /* Responsive design */
+        @media (max-width: 500px) {
+            .game-board {
+                max-width: 100%;
+            }
+            
+            .cell {
+                font-size: 2rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="theme-toggle">🎨</div>
+    
+    <h1>Tic Tac Toe Deluxe</h1>
+    
+    <div class="game-container">
+        <div class="status">
+            Au tour du joueur <span class="player-turn player-x">X</span>
+        </div>
+        
+        <div class="board-container">
+            <div class="timer">10</div>
+            <div class="game-board">
+                <div class="cell" data-index="0"></div>
+                <div class="cell" data-index="1"></div>
+                <div class="cell" data-index="2"></div>
+                <div class="cell" data-index="3"></div>
+                <div class="cell" data-index="4"></div>
+                <div class="cell" data-index="5"></div>
+                <div class="cell" data-index="6"></div>
+                <div class="cell" data-index="7"></div>
+                <div class="cell" data-index="8"></div>
+            </div>
+            <div class="win-animation"></div>
+        </div>
+        
+        <div class="scoreboard">
+            <div class="score-column x active">
+                <div class="player-name">Joueur X</div>
+                <div class="score" id="x-score">0</div>
+            </div>
+            <div class="score-column draws">
+                <div class="player-name">Nuls</div>
+                <div class="score" id="draws">0</div>
+            </div>
+            <div class="score-column o">
+                <div class="player-name">Joueur O</div>
+                <div class="score" id="o-score">0</div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="reset-btn">Nouvelle Partie</button>
+            <button class="mode-btn" data-mode="time">Mode Chrono</button>
+            <button class="mode-btn" data-mode="powerup">Mode Power-Up</button>
+            <button class="reset-score-btn">Réinitialiser Scores</button>
+        </div>
+    </div>
+    
+    <div class="modal" id="win-modal">
+        <div class="modal-content">
+            <h2>Félicitations!</h2>
+            <p>Le joueur <span id="winner"></span> a gagné la partie!</p>
+            <button class="modal-btn">Continuer</button>
+        </div>
+    </div>
+    
+    <div class="modal" id="draw-modal">
+        <div class="modal-content">
+            <h2>Match Nul!</h2>
+            <p>Personne n'a gagné cette fois-ci.</p>
+            <button class="modal-btn">Continuer</button>
+        </div>
+    </div>
+    
+    <div class="modal" id="powerup-modal">
+        <div class="modal-content">
+            <h2>Power-Up Activé!</h2>
+            <p>Vous pouvez <span id="powerup-action">déplacer une case adversaire</span> une fois!</p>
+            <button class="modal-btn">Utiliser</button>
+        </div>
+    </div>
+    
+    <script>
+   
+    </script>
+</body>
+</html>
