@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau avec tri dynamique - Données africaines</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            cursor: pointer;
+            position: relative;
+        }
+        th:hover {
+            background-color: #e6e6e6;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .sort-icon {
+            display: inline-block;
+            width: 0;
+            height: 0;
+            margin-left: 5px;
+            vertical-align: middle;
+        }
+        .sort-asc::after {
+            content: " ▲";
+            font-size: 0.8em;
+        }
+        .sort-desc::after {
+            content: " ▼";
+            font-size: 0.8em;
+        }
+    </style>
+</head>
+<body>
+    <h1>Pays d'Afrique - Tableau avec tri dynamique</h1>
+    <p>Cliquez sur les en-têtes des colonnes pour trier le tableau.</p>
+    
+    <table id="table-sortable">
+        <thead>
+            <tr>
+                <th>Pays</th>
+                <th>Capitale</th>
+                <th>Population (millions)</th>
+                <th>Superficie (km²)</th>
+                <th>PIB par habitant (FCFA)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Togo</td>
+                <td>Lomé</td>
+                <td>8,3</td>
+                <td>56 785</td>
+                <td>91 500</td>
+            </tr>
+            <tr>
+                <td>Ghana</td>
+                <td>Accra</td>
+                <td>31,7</td>
+                <td>238 535</td>
+                <td>2 374</td>
+            </tr>
+            <tr>
+                <td>Bénin</td>
+                <td>Porto-Novo</td>
+                <td>12,5</td>
+                <td>112 622</td>
+                <td>1 428</td>
+            </tr>
+            <tr>
+                <td>Nigeria</td>
+                <td>Abuja</td>
+                <td>211,4</td>
+                <td>923 768</td>
+                <td>2 097</td>
+            </tr>
+            <tr>
+                <td>Côte d'Ivoire</td>
+                <td>Yamoussoukro</td>
+                <td>27,5</td>
+                <td>322 463</td>
+                <td>2 325</td>
+            </tr>
+            <tr>
+                <td>Sénégal</td>
+                <td>Dakar</td>
+                <td>16,7</td>
+                <td>196 722</td>
+                <td>1 622</td>
+            </tr>
+            <tr>
+                <td>Kenya</td>
+                <td>Nairobi</td>
+                <td>54,9</td>
+                <td>580 367</td>
+                <td>2 005</td>
+            </tr>
+            <tr>
+                <td>Maroc</td>
+                <td>Rabat</td>
+                <td>37,1</td>
+                <td>446 550</td>
+                <td>3 237</td>
+            </tr>
+            <tr>
+                <td>Égypte</td>
+                <td>Le Caire</td>
+                <td>104,3</td>
+                <td>1 001 450</td>
+                <td>3 876</td>
+            </tr>
+            <tr>
+                <td>Afrique du Sud</td>
+                <td>Pretoria</td>
+                <td>60,1</td>
+                <td>1 219 090</td>
+                <td>6 001</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialiser le tri de tableau
+            const tableSort = new TableSorter('table-sortable');
+            tableSort.initialize();
+        });
+
+        class TableSorter {
+            constructor(tableId) {
+                this.table = document.getElementById(tableId);
+                this.headers = this.table.querySelectorAll('th');
+                this.tbody = this.table.querySelector('tbody');
+                this.rows = Array.from(this.tbody.querySelectorAll('tr'));
+                this.currentColumn = null;
+                this.direction = 'asc';
+            }
+
+            initialize() {
+                // Ajouter des écouteurs d'événements aux en-têtes
+                this.headers.forEach((header, index) => {
+                    header.addEventListener('click', () => {
+                        this.sortTable(index);
+                    });
+                });
+            }
+
+            sortTable(columnIndex) {
+                // Réinitialiser les classes des en-têtes
+                this.headers.forEach(header => {
+                    header.classList.remove('sort-asc', 'sort-desc');
+                });
+
+                // Déterminer la direction de tri
+                if (this.currentColumn === columnIndex) {
+                    this.direction = this.direction === 'asc' ? 'desc' : 'asc';
+                } else {
+                    this.currentColumn = columnIndex;
+                    this.direction = 'asc';
+                }
+
+                // Ajouter la classe de direction appropriée
+                this.headers[columnIndex].classList.add(
+                    this.direction === 'asc' ? 'sort-asc' : 'sort-desc'
+                );
+
+                // Trier les lignes
+                this.rows.sort((a, b) => {
+                    // Obtenir les valeurs des cellules à comparer
+                    const aValue = a.cells[columnIndex].textContent.trim();
+                    const bValue = b.cells[columnIndex].textContent.trim();
+
+                    // Déterminer si les valeurs sont numériques
+                    const aNum = this.parseValue(aValue);
+                    const bNum = this.parseValue(bValue);
+
+                    // Comparer les valeurs
+                    let comparison;
+                    if (aNum !== null && bNum !== null) {
+                        // Comparaison numérique
+                        comparison = aNum - bNum;
+                    } else {
+                        // Comparaison alphabétique
+                        comparison = aValue.localeCompare(bValue, 'fr', { sensitivity: 'base' });
+                    }
+
+                    // Inverser la comparaison si la direction est descendante
+                    return this.direction === 'asc' ? comparison : -comparison;
+                });
+
+                // Réorganiser le tableau
+                this.rows.forEach(row => {
+                    this.tbody.appendChild(row);
+                });
+            }
+
+            // Essaie de convertir une valeur en nombre, retourne null si ce n'est pas possible
+            parseValue(value) {
+                // Si la valeur contient des chiffres uniquement ou des chiffres avec un point/virgule (décimal)
+                if (/^-?\d+(\.\d+)?$|^-?\d+(,\d+)?$/.test(value)) {
+                    // Remplacer la virgule par un point pour les nombres décimaux
+                    return parseFloat(value.replace(',', '.'));
+                }
+                return null;
+            }
+        }
+    </script>
+</body>
+</html>
